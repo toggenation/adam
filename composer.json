@@ -1,0 +1,5 @@
+{
+    "require": {
+        "aldas/modbus-tcp-client": "^3.2"
+    }
+}
