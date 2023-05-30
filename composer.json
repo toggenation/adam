@@ -1,5 +1,6 @@
 {
     "require": {
-        "aldas/modbus-tcp-client": "^3.2"
+        "aldas/modbus-tcp-client": "^3.2",
+        "vlucas/phpdotenv": "^5.5"
     }
 }
