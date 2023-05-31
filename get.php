@@ -17,9 +17,14 @@ $unitID = $_ENV['SLAVE_ID']; // also known as 'slave ID'
 $fc3 = ReadRegistersBuilder::newReadHoldingRegisters($address, $unitID)
     // ->bit(256, 15, 'pump2_feedbackalarm_do')
     // will be split into 2 requests as 1 request can return only range of 124 registers max
-    ->uint16(0, 'counter_1') // 40001
-    ->uint16(1, 'counter_2') // 40002
-    ->uint32(0, 'counter') // this works and no adding and bitshifting
+    ->uint16(0, 'counter_a') // 40001
+    ->uint16(1, 'counter_b') // 40002
+    ->uint32(0, 'counter_1') // DI-0 counter
+    ->uint32(2, 'counter_2') // DI-1 counter 
+    ->uint32(4, 'counter_3') // DI-2 counter
+    ->uint32(6, 'counter_4') // DI-3 counter
+    ->uint32(8, 'counter_5') // DI-4 counter
+    ->uint32(10, 'counter_6') // DI-5 counter
     // will be another request as uri is different for subsequent int16 register
     // ->useUri('tcp://127.0.0.1:5023')
     // ->string(
@@ -37,19 +42,26 @@ $fc3 = ReadRegistersBuilder::newReadHoldingRegisters($address, $unitID)
     ->build(); // returns array of 3 ReadHoldingRegistersRequest requests
 
 // this will use PHP non-blocking stream io to recieve responses
-$responseContainer = (new NonBlockingClient(['readTimeoutSec' => 0.2]))->sendRequests($fc3);
+
+try {
+    $responseContainer = (new NonBlockingClient(['readTimeoutSec' => 0.2]))->sendRequests($fc3);
+} catch (\Throwable $e) {
+    echo PHP_EOL .  $e->getMessage() . str_repeat(PHP_EOL, 2);
+    return;
+}
+
 $data = $responseContainer->getData();
 
 // print_r($data); // array of assoc. arrays (keyed by address name)
 
-$result = $data['counter_1'] + ($data['counter_2'] << 16);
+// $result = $data['counter_a'] + ($data['counter_b'] << 16);
 
-$target = 21464143; // DI-0 counter read from the Adam .NET gui client
+// $target = 21464143; // DI-0 counter read from the Adam .NET gui client
 
 print_r([
-    'data_from_adam' => $data,
-    'result' => $result,
-    'target' => $target,
-    'match' => $target === $result ? "Match" : "Fail",
+    'data_from_adam_6251' => $data,
+    // 'result' => $result,
+    // 'target' => $target,
+    // 'match' => $target === $result ? "Match" : "Fail",
     'errors' => $responseContainer->getErrors()
 ]);
