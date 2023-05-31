@@ -1,14 +1,13 @@
 <?php
 
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
-use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Network\NonBlockingClient;
 
 require './vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
 
+$dotenv->load();
 
 $address = $_ENV['TARGET'];
 
